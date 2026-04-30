@@ -164,21 +164,18 @@ useEffect(() => {
     setUsage(Array.isArray(u) ? u.map(x=>({...x,id:Number(x.id),vehicleId:Number(x.vehicleId),kmStart:Number(x.kmStart),kmEnd:Number(x.kmEnd)})) : []);
     setMaint(Array.isArray(m) ? m.map(x=>({...x,id:Number(x.id),vehicleId:Number(x.vehicleId),cost:Number(x.cost),kmAtService:Number(x.kmAtService)})) : []);
     setParts(Array.isArray(p) ? p.map(x=>({...x,id:Number(x.id),vehicleId:Number(x.vehicleId),qty:Number(x.qty),partCost:Number(x.partCost),laborCost:Number(x.laborCost)})) : []);
+    // Auto-pilih kendaraan pertama setelah load
+    if (Array.isArray(v) && v.length > 0) setActiveVehicle(Number(v[0].id));
     setLoading(false);
   }
   loadAll();
 }, []);
 
-  const [activeVehicle, setActiveVehicle] = useState(1);
-  const [tab, setTab]     = useState("dashboard"); // dashboard | usage | maintenance | parts
-  const [modal, setModal] = useState(null);        // null | { type, data }
-  if (loading) return (
-  <div style={{ background: "#0D0F14", minHeight: "100vh", display: "flex",
-    alignItems: "center", justifyContent: "center", color: "#22D3EE",
-    fontSize: 18, fontFamily: "sans-serif" }}>
-    ⏳ Memuat data dari Google Sheets...
-  </div>
-);
+  const [activeVehicle, setActiveVehicle] = useState(0);
+  const [tab, setTab]     = useState("dashboard");
+  const [modal, setModal] = useState(null);
+  const [form, setForm]   = useState({});
+
   const veh = vehicles.find(v => v.id === activeVehicle);
   const vUsage = usage.filter(u => u.vehicleId === activeVehicle).sort((a, b) => a.month > b.month ? 1 : -1);
   const vMaint = maintenance.filter(m => m.vehicleId === activeVehicle).sort((a, b) => b.date > a.date ? 1 : -1);
@@ -192,8 +189,6 @@ useEffect(() => {
   const lastMaint  = vMaint[0];
   const curKm      = vUsage.length ? vUsage[vUsage.length - 1].kmEnd : 0;
 
-  // ── Form state helpers ──
-  const [form, setForm] = useState({});
   const fv = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const openModal = (type, data = {}) => { setForm(data); setModal({ type }); };
@@ -298,6 +293,14 @@ const delPart = async (id) => {
     background: tab === t ? C.accent : "transparent",
     color: tab === t ? "#fff" : C.muted,
   });
+
+  if (loading) return (
+  <div style={{ background: "#0D0F14", minHeight: "100vh", display: "flex",
+    alignItems: "center", justifyContent: "center", color: "#22D3EE",
+    fontSize: 18, fontFamily: "sans-serif" }}>
+    ⏳ Memuat data dari Google Sheets...
+  </div>
+);
 
   return (
     <div style={{ fontFamily: "'IBM Plex Sans', 'Segoe UI', sans-serif", background: C.bg, minHeight: "100vh", color: C.text }}>
@@ -414,6 +417,14 @@ const delPart = async (id) => {
               {vMaint.length === 0 && <div style={{ color: C.muted, fontSize: 13, padding: "20px 0", textAlign: "center" }}>Belum ada data maintenance</div>}
               {vMaint.map(m => {
                 const relParts = vParts.filter(p => p.maintenanceId === m.id);
+                
+  if (loading) return (
+  <div style={{ background: "#0D0F14", minHeight: "100vh", display: "flex",
+    alignItems: "center", justifyContent: "center", color: "#22D3EE",
+    fontSize: 18, fontFamily: "sans-serif" }}>
+    ⏳ Memuat data dari Google Sheets...
+  </div>
+);
                 return (
                   <div key={m.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 12, padding: "14px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>

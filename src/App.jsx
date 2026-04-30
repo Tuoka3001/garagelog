@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { getAll, addRow, updateRow, deleteRow } from './api.js';
 
-import { useState, useMemo } from "react";
-
 // ── Palette & constants ──────────────────────────────────────────────────────
 const C = {
   bg:      "#0D0F14",
